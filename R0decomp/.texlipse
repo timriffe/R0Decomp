@@ -1,0 +1,13 @@
+#TeXlipse project settings
+#Tue May 13 16:58:06 PDT 2014
+builderNum=2
+outputDir=
+makeIndSty=
+bibrefDir=
+outputFormat=pdf
+tempDir=tmp
+mainTexFile=R0decomp.tex
+outputFile=R0decomp.pdf
+langSpell=en
+markDer=true
+srcDir=

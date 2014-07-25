@@ -1,0 +1,324 @@
+\documentclass{article}
+%% Language %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\usepackage[francais]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[latin1]{inputenc}
+ %%graphics in pdfLaTeX
+\usepackage[pdftex]{graphicx}
+\usepackage{subfig,sidecap,wrapfig,geometry}
+%% Math Packages %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{amsmath,amsthm,amsfonts,amssymb}
+%% Tables
+\usepackage{multirow,tabularx,delarray,array,booktabs,ctable,tabulary,float,dcolumn}
+%\usepackage{flafter}
+%%Bibliography
+\usepackage{natbib}
+\bibpunct{(}{)}{;}{a}{,}{,}
+%%\addtolength{\hoffset}{-1cm}
+%%\addtolength{\textwidth}{2cm}
+\usepackage{fullpage}
+
+\begin{document}
+\title{\textbf{Decomposing Differences in R0}
+\author{Tim Riffe \footnote{Email: triffe@demog.berkeley.edu}\\
+Department of Demography\\ 
+University of California, Berkeley \\
+}
+\date{Feb. 2011}
+}
+\maketitle
+
+\begin{abstract}
+This paper proposes a decomposition method for net reproduction, $R_{0}$. The method is based on a modification
+of \citet{kltagawa1955components} to break down the difference by age into a
+survival component and a fertility component. An extension is proposed to separate differences due to the sex ratio at birth. This is followed by a method variant to redistribute mortality effects according to the ages where mortality changes take place. Finally, the method used by \citet{lillova2008r0decomp} to decompose relative changes in $R_{0}$ is examined and related to the other methods here. I offer recommendations for decomposition analyses of differences or changes in $R_{0}$.
+\end{abstract}
+
+
+\pagebreak
+
+%\section*{On Decomposition}
+%Decomposition is a method used by demographers and other quantitative social
+%scientists to quantify the separate effects of two or more values on an average
+%value. The most common illustration decomposition methods is the
+%crude death rate (CDR), and the most basic and useful decomposition method to
+%do so is that of \citet{kltagawa1955components}, which is referred to as
+%Kitagawa decomposition in the following. In the case of the CDR, Kitagawa
+%decomposition is used to separate the effects of population structure, i.e.,
+%the particular shape of the age pyramid, from age-specific death rates. If a
+%population pyramid is biased toward older ages, as is the case in many current
+%European populations, the CDR may be quite high, despite the fact that
+%mortality at each age is relatively low. Since both rates and structure change,
+%CDR is not comparable over time or between populations in most situations
+%without further insight into the drivers of the difference. Kitagawa
+%decomposition splits the CDR into two additive components, an age-structure
+%part and a rate part. This is much more informative for demographers than CDR,
+%and it is always good practice to separate and quantify the effects of
+%population structure on all crude vital rates. 
+
+%The formulas are simple and can be executed in spreadsheets. For a given set of
+%population counts classified in $n$-year age intervals,
+%${}_{n}P_{x}$\footnote{These values should represent person years lived in the
+%age-interval, i.e. not census counts. Mid-year estimates will also suffice.}
+%and another set of events (say deaths or births) by age ${}_{n}D_{x}$.
+%\begin{align}
+%\intertext{Define population structure, ${}_{n}C_{x}$}
+%{}_{n}C_{x} =& \frac{{}_{n}P_{x}}{\displaystyle\sum_{i=0}^{\omega} {}_{n}P_{i}}
+%\notag
+%\intertext{and thus:}
+%1 &= \sum_{i=0}^{\omega} {}_{n}C_{i} \notag
+%\intertext{Define the rate as events over exposure}
+%{}_{n}M_{x} &= \frac{{}_{n}D_{x}}{{}_{n}P_{x}} \notag
+%\intertext{Then our crude rate (CR) is the sum of the product of these:}
+%CR &= \sum _{0}^{\omega} {}_{n}M_{x}{}_{n}C_{x} \notag
+%\intertext{and the difference between two crude rates, $\varepsilon$ is:}
+%\varepsilon =& CR^{1}-CR^{2} \notag \\ \notag \\
+%						=& \rho + \beta \notag
+%\intertext{where}
+%				\rho =&				
+				%\frac{({}_{n}C_{x}^{1}-{}_{n}C_{x}^{2})({}_{n}M_{x}^{1}+{}_{n}M_{x}^{2})}{2}
+				%\notag \\ \notag \\ \beta =& \frac{({}_{n}M_{x}^{1}-{}_{n}M_{x}^{2})({}_{n}C_{x}^{1}+{}_{n}C_{x}^{2})}{2} \notag
+%\end{align}
+
+%In this case, $\rho$ and $\beta$ always sum perfectly to the difference between
+%two rates. $\rho$ is interpreted as the part of the difference in the crude
+%rate that is due to differences in population structure, and $\beta$ is
+%interpreted as the part due to differences in rates. One convenient aspect of
+%this method is that it also produces a set of age-specific effects. A proof of
+%the above formula is provided in following for the case of $R_{0}$.
+
+%In summary, the basic idea behind decomposition is that any demographic rate
+%may be a function of two or more underlying elements, lurking variables.
+%Luckily, there are many extensions of Kitagawa decomposition to deal with more
+%complex situations. Many of these have been described by
+%\citet{romo2003decomposition}. Part of the job of demographers is to describe
+% vital rates and their consequences, in which case analytic decomposition (that 
+%described here) and statistical decomposition (i.e. regression) become
+%indispensable tools. One important aspect of the above formula is that it is
+%generalizable. Its potential uses extend well beyond that of removing
+%perturbations due to population structure: The Kitagawa formula can be used to
+%separate the components of \emph{any} crude difference where each crude rate is
+%the sum of a product of two sets of values. Another job of demographers is to
+%try to think about new things that may be distorting our trusted rates and
+%measures and to quantify them. This is the motivation behind the multiple
+%measures of fertility quantum and tempo, the various ways of adjusting the
+%total fertility rate that have come of them. The present paper is yet another
+%proposal to apply analytic decomposition methods to a less-used but still
+%classic demographic summary measure, $R_{0}$.
+
+\section*{On net reproduction, $R_{0}$}
+\textsc{Net reproduction}, $R_{0}$, is a demographic measure intended to
+summarize the lifetime reproductive capacity of a population, the average number
+of children born per parent \citep{kuczynski1932fertility} assuming stability of
+current period demographic forces. Either for pragmatic or dogmatic reasons most
+demographers turn the focus to the female part of the population, thereby redefining the measure to daughters born per female, or female reproductivity. The inherent assumption in doing so is not that the population is single-sex, but rather that females are the limiting factor to population growth, i.e. that males are never scarce \citep{keyfitz2005applied}. Net reproduction, in the case of either a sexually homogeneous population or a population with single-sex dominance, is defined as:
+
+\begin{align}
+R_{0} &= \int_{0}^{\infty}p(a)m(a)da \notag \text{,}
+\end{align}
+where $p(a)$ is the probability of survival to exact age $a$ and $m(a)$ is the
+maternity function, the probability of a birth (usually just female births) at
+the exact age $a$ given survival to age $a$. Fertility and survival are the two
+demographic functions that determine population reproduction. Both forces vary
+by age, and so their product is summed over age to arrive at the final value of
+net reproduction. 
+
+When integrated within each age interval, the survival probabilities, $p(a)$,
+correspond to the discrete function ${}_{n}L_{x}$ with a lifetable radix of 1,
+i.e., when $l_{0} = 1$. Any ${}_{n}L_{x}$ can be converted to a radix of 1 (i.e.,
+a discrete approximation of $p(a)$) by dividing by the $l_{0}$ used in its calculation. In
+the case of discrete values, $m_{a}$ can be approximated by the age-specific
+fertility rate, ${}_{n}f_{x}$, calculated as births over person years of exposure.
+The following formulas and the proof of their consistency will be stated using
+${}_{n}L_{x}$, since it is generally available, but the proofs hold when using
+$n\cdot\frac{l_{x}+l_{x+n}}{2}$ instead of the more precise ${}_{n}L_{x}$. A
+discrete approximation of $R_{0}$ is therefore:
+
+\begin{align}
+R_{0} &= \sum_{0}^{\omega} {}_{n}f_{x} {}_{n}L_{x} \label{eq1}
+\end{align}
+where $\omega$ is the upper open age group considered, e.g. 100+. The limits of summation need not be set to $0$ and $\omega$, but could also be set to only encompass reproductive ages, since $f_{x}$ is simply 0 outside of reproductive ages. \footnote{I maintain the habit of summing over all ages in order to account for a set of special cases in other circumstances: 1) if net transfers affect reproductivity, as \citet{lee2003rethinking} and \citet{kaplan2003embodied} argue, then models (and a modified version of R0) include population beyond reproductive ages, which remain net producers and thereby contribute to reproduction. Early ages are included in this case because they are net recipients; 2) in the case of comparing male and female reproduction, we prefer to cover the entire age range in order to account for the late-life advantage in male fertility; 3) if $d_{x}$ is used instead of $l_{x}$, mortality in pre-reproductive ages has a large impact on $R_{0}$; 4) to increase comparability between populations, e.g. so that populations with different starting and ending ages of fertility may share the same age axis.}
+
+\section*{Kitagawa decomposition of differences in $R_{0}$}
+Clearly, the difference between two values of $R_{0}$, $\varepsilon$ can be broken down into its age-specific components. In the discrete formulas that follow, the left subscript ${}_n$ has been omitted to reduce clutter:
+
+\begin{align}
+	\varepsilon   				&= R_{0}^{1} - R_{0}^{2}\notag \\ \notag \\
+	\varepsilon   				&= \int_{0}^{\infty}p(a)^{1}m(a)^{1}da - \int_{0}^{\infty}p(a)^{2}m(a)^{2}da \notag \\ \notag \\
+	\varepsilon(a) 				&= p(a)^{1}m(a)^{1} - p(a)^{2}m(a)^{2} \notag \\
+	\intertext{In discrete terms:}
+	\varepsilon   				&= \sum_{0}^{\omega} f _{x}^{1} L _{x}^{1} - \sum_{0}^{\omega} f _{x}^{2} L _{x}^{2} \notag \\ \notag \\
+	\varepsilon _{x} 			&= f_{x}^{1}  L _{x}^{1} - f _{x}^{2} L _{x}^{2}\label{eq2}
+\end{align}
+The above formula is sufficient to break down $\varepsilon$ by age, but it does not separate the impacts of fertility and mortality differentials between the two populations. The following formula, reminiscent of a Kitagawa-style decomposition\citep{kltagawa1955components}, is useful to decompose the difference between two $R_{0}$ estimates into age-specific fertility and survival components. The total difference, $\varepsilon$, here consists consists in the sum of a fertility summary component, $\beta$, and a survival component, $\rho$, each of which are the totals of their age specific counterparts:
+
+\begin{align}
+	\varepsilon   &= \beta + \rho \notag\\ \notag \\
+	\int_{0}^{\infty}\varepsilon(a)da &= \int_{0}^{\infty}\beta(a)da + \int_{0}^{\infty}\rho(a)da\notag\\ \notag \\
+	\varepsilon(a) &= \beta(a)+\rho(a) \notag \\
+	\intertext{And discretely:}
+	{}_n\varepsilon_{x}   &= {}_n\beta_{x} + {}_n\rho_{x}\label{eq3}\\ \notag \\
+	\intertext{Where $_{n}\beta_{x}$ and $_{n}\rho_{x}$ are defined as follows (again without ${}_n$):}
+  \beta_{x} 		&= \frac{\displaystyle (f_{x}^{1}-f_{x}^{2})(L_{x}^{1}+L_{x}^{2})}{2} \label{eq4} \\ \notag\\
+	\rho_{x} 			&= \frac{\displaystyle (L_{x}^{1}-L_{x}^{2})(f_{x}^{1}+f_{x}^{2})}{2} \label{eq5}
+\end{align}
+The two components, $\beta$ and $\rho$ are thus key to understanding the demographic factors that account for the difference between two values of $R_{0}$, and the distribution of $\beta_{x}$ and $\rho_{x}$. For example, is the reproductive advantage of population A over population B due primarily to higher fertility or lower mortality? What ages account for the differences? How do these things depend on age? 
+\subsection{Proof of Consistency}
+
+\begin{align}
+	\varepsilon_{x}	&= \beta_{x}+\rho_{x}\notag \\ \notag \\
+	\intertext{expanding from the above definitions:}
+					&= \frac{f_{x}^{1}L_{x}^{1}+f_{x}^{1}L_{x}^{2}-f_{x}^{2}L_{x}^{1}-f_{x}^{2}L_{x}^{2}+L_{x}^{1}f_{x}^{1}+L_{x}^{1}f_{x}^{2}-L_{x}^{2}f_{x}^{1}-L_{x}^{2}f_{x}^{2}}{2}\notag \\ \notag \\
+								&= \frac{2f_{x}^{1}L_{x}^{1}-2f_{x}^{2}L_{x}^{2}}{2}\notag \\ \notag \\
+								&= f_{x}^{1}L_{x}^{1}-f_{x}^{2}L_{x}^{2} \notag \\ \notag \\
+								&= \varepsilon_{x} ~~\text{see (\ref{eq2})}{~~~~~~~~~~~}\blacksquare 
+\end{align}
+
+\section*{Comparing the sexes}
+The researcher may be interested in testing the above formula on decomposing differences between the sexes, i.e. with male $R_{0}$ calculated using a fertility vector of male births by age of father divided by male exposure and then discounted for male survival. If we compare male and female $R_{0}$, we may correctly conclude that male $R_{0}$, $R_{0}^{m}$, is higher than female $R_{0}$, $R_{0}^{f}$\footnote{Male $R_{0}$ is higher than female $R_{0}$ in most populations, both historical and modern. One exception is Spain, since the year 2004.}, in a given year, but falsely attribute excess male fertility to lower male exposures later in life. While this holds to a certain extent, it is only relevant when comparing birth rates alone: population structure has been purged separately for each sex in the measures used to calculate $R_{0}^{m}$ and $R_{0}^{f}$. The hidden culprit in this case is the sex ratio at birth. At most ages, more males are born than females. In comparing $R_{0}^{m}$ and $R_{0}^{f}$, a certain proportion of the difference will owe solely to the sex ratio at birth. This is problematic not only because the sex ratio at birth builds in a natural tilt to comparing sex-specific $R_{0}$s, but also because it varies by age of parent considered, and it can change over time along these dimensions, just as do fertility and mortality. In other words, it is desirable to control for sex ratio at birth in decomposing $R_{0}$ not only in comparing the vital rates of the sexes, but also when comparing the standard female $R_{0}$ in different years or populations. When disaggregated along these lines, we observe that the sex ratio at birth very often deviates from the commonly assumed 1.05 boys per girl born. 
+
+To be clear, we define $R_{0}^{m}$ and $R_{0}^{f}$ as follows:
+\begin{align}
+R_{0}^{m} &= \int _{0}^{\infty} f(a)^{m}\frac{sr^{m}(a)}{1+sr^{m}(a)}l(a)^{m}da \notag \\ \notag \\
+R_{0}^{f} &= \int _{0}^{\infty} f(a)^{f}\frac{1}{1+sr^{f}(a)}l(a)^{f}da \notag \\ \notag \\
+\intertext{where:}
+sr &= \frac{\text{male births}}{\text{total births}} \notag
+\end{align}
+
+The superscripts ${}^{m}$ and ${}^{f}$ indicate males or females, respectively. It is worth noting specially that the sex ratio at birth is different for fathers and mothers of a given age, hence $sr^{f}(a)$ and $sr^{m}(a)$ are two different vectors. To simplify further formulas, I condense $\frac{sr^{m}(a)}{1+sr^{m}(a)}$ into $pm^{m}(a)$, the proportion of births to fathers that are male; and $\frac{1}{1+sr^{f}(a)}$ to $pf^{f}(a)$, the proportion of births that are female to mothers at exact age $a$.
+This condenses the above definitions to:
+\begin{align}
+R_{0}^{m} &= \int _{0}^{\infty} f(a)^{m}pm^{m}(a)l(a)^{m}da \notag \\ \notag \\
+R_{0}^{f} &= \int _{0}^{\infty} f(a)^{f}pf^{f}(a)l(a)^{f}da \notag
+\end{align}
+Note that net reproduction is here the product of three factors. Methods already exist for decomposing rates that consist in the product of three or more factors, but these are designed for cross-classified data, i.e. where population counts can be divided into subgroups, such as by age and weight, each combination of which has a characteristic weight. These can be made hierarchical in their effects, as in \citet{kim1984decomposition}, or symmetrical, as in \citet{gupta1978general}. These cases do not hold in this particular decomposition problem. \citet{das1993standardization} summarizes how to decompose rates that are the products of three or more multiplicative factors, but he provides equal weight and information to each factor; his formulas are symmetric. Symmetry is often a desirable property in decomposition- it ought no to matter what order elements are entered into the formula. This does not apply to the case at hand. Here we have a sex-specific rate, female babies born divided by female exposure, and we want to treat it as a product, the fertility rate multiplied by the proportion of births that are female (or vice versa for males). Both the proportion of births that are female and the all-birth (normal) fertility rate are classified by age of mother in this case, but they are not cross-classified. Furthermore, the way we change the treatment of fertility effects (subdividing them) ought not effect the survival effects in decomposition. In a symmetric decomposition, splitting fertility into a product will also necessarily change the effects attributed to survival: This would be an undesirable result in the present application. The explicit result we desire in this particular three-factor decomposition is that 1) the survival effect remains the same as if we were to treat fertility as a single element \eqref{eq5} and 2) the two subcomponents for the fertility effect (the sex ratio effect and the pure fertility effect) ought to sum to exactly the same amount as in the undifferentiated Kitagawa decomposition, \eqref{eq4} above.
+
+The strategy is analogous to the above basic case. We preserve $\rho$ with the same name, formula and interpretation, and split the fertility component, $\beta$ into two parts, one for fertility-only, $\beta^{\star}$, and another for the sex ratio component, $\varsigma$. We note that $\beta$ in the case of the simple decomposition above is equal to the sum of the present $\beta^{\star}$ (pure fertility) and $\varsigma$ (sex ratio component). We define the difference between two sex-specific $R_{0}$ values, $\varepsilon$ as the sum of a survival component, a pure fertility component and a sex ratio at birth component. Again, the interval subscript ${}_{n}$ is omitted:
+\begin{align}
+\varepsilon &= R_{0}^{m} - R_{0}^{f} \notag \\ \notag \\
+\varepsilon &= \beta^{\star} + \varsigma + \rho \notag \\
+\intertext{and}
+\varepsilon_{x} &= \beta_{x} + \varsigma_{x} + \rho_{x}
+\intertext{where $\beta$, $\varsigma$ and $\rho$ are the sums of the vectors of their age-specific counterparts:}
+\beta_{x}^{\star} &= \frac{(f^{m}_{x}-f^{f}_{x})(pm^{m}_{x}+pf^{f}_{x})(L^{m}_{x}+L^{f}_{x})}{4} \notag \\ \notag \\
+\varsigma_{x} &= \frac{(pm^{m}_{x}-pf^{f}_{x})(f^{m}_{x}+f^{f}_{x})(L^{m}_{x}+L^{f}_{x})}{4} \notag \\ \notag \\
+\rho_{x} &= \frac{(L^{m}_{x}-L^{f}_{x})(f^{m}_{x}pm^{m}_{x}+f^{f}_{x}pf^{f}_{x})}{2} \notag
+\end{align}
+\subsection{Proof of Consistency}
+That these three components need sum to the difference between a given male and a given female rate is not necessarily obvious to the naked eye. The following proof follows the same steps as the above: first expansion of the above statements, followed by cancellation.
+\begin{align}
+\frac{1}{2}\Big(& L^{m}_{x}f^{m}_{x}pm^{m}_{x} + L^{m}_{x}f^{f}_{x}pf^{f}_{x} - L^{f}_{x}f^{m}_{x}pm^{m}_{x} - L^{f}_{x}f^{f}_{x}pf^{f}_{x}\Big) \notag \\ \notag \\
++ \frac{1}{4}\Big(& L^{m}_{x}f^{m}_{x}pm^{m}_{x} - L^{m}_{x}f^{m}_{x}pf^{f}_{x} + L^{m}_{x}f^{f}_{x}pm^{m}_{x} - L^{m}_{x}f^{f}_{x}pf^{f}_{x} \notag \\ \notag \\
++& L^{f}_{x}f^{m}_{x}pm^{m}_{x} - L^{f}_{x}f^{m}_{x}pf^{f}_{x} + L^{f}_{x}f^{f}_{x}pm^{m}_{x} - L^{f}_{x}f^{f}_{x}pf^{f}_{x}  \notag \\ \notag \\
++& L^{m}_{x}f^{m}_{x}pm^{m}_{x} - L^{m}_{x}f^{f}_{x}pm^{m}_{x} + L^{m}_{x}f^{m}_{x}pm^{f}_{x} - L^{m}_{x}f^{f}_{x}pf^{f}_{x} \notag \\ \notag \\
++& L^{f}_{x}f^{m}_{x}pm^{m}_{x} - L^{f}_{x}f^{f}_{x}pm^{m}_{x} + L^{f}_{x}f^{m}_{x}pm^{f}_{x} - L^{f}_{x}f^{f}_{x}pf^{f}_{x}\Big) \notag \\ 
+\intertext{which cancels out to exactly:}
+&= L^{m}_{x}f^{m}_{x}pm^{m}_{x} - L^{f}_{x}f^{f}_{x}pf^{f}_{x} \notag \\ \notag \\
+&= \varepsilon _{x}{~~~~~~~~~~~}\blacksquare
+\end{align}
+
+Here, defining $R_{0}$ as the product of three components has allowed us to extract a further piece of information, how much of the fertility component is due to biases in the sex ratio at birth. It is always more precise to use this later method in any case. When comparing two different populations and when comparing two time points in the same population that are spaced far apart, this more sophisticated decomposition method is preferable.  When comparing males and females it is indispensable.
+
+\section*{Distributing the Mortality Component}
+Up to this point we have treated $R_{0}$ decomposition as a basic Kitagawa problem. In order to get a clearer picture of fertility differences, we removed the effect of sex ratio at birth. Now we will attempt to redefine the survival component in a more intuitive way. So far, the way we would interpret $\rho_{x}$ is straightforward: $\rho_{x}$ is the net effect of differences in survival \emph{until} age $x$ on reproductivity \emph{at} age $x$. The survival function at exact age $x$ reflects the probability of surviving from the moment of birth at every moment until age $x$. However, $\rho_{x}$ thus far has been attributed entirely to age $x$, not to the ages prior to $x$ through which one must pass in order to reach $x$. To illustrate, say the unconditional probability of death between exact ages $x-6$ and $x-5$ drops by some amount, $c$, and all other unconditional interval probabilities of dying remain the same up until age $x$. Here, we would observe an $l_{x}$ that is $c$ higher, however at an age where no improvements took place. In the above formulas, $rho_{x}$ is attributed to age $x$ instead of to the interval $x-6$ to $x-5$ where the real improvements took place. 
+
+An easy to grasp example is that of infant mortality improvements. The hazard of dying in the first year (month, week) of life has fallen greatly over prior decades. If we assume that the infant lives \emph{saved} by better education, nutrition, technology and other measures go on to reproduce like everyone else, homogeneity, then the benefits to reproduction will be born out over a long series of later ages. By this line of reasoning, the mortality changes that most effect net reproduction are not necessarily located within reproductive ages, but but may be prior to reproductive ages: net reproduction is effected greatly by infant and child mortality.
+
+It is reasonable to desire a manner of redistributing $rho$ over the ages up to and including $x$ where death probabilities dropped. This is achieved by rephrasing the above formulas in terms of $d_{x}$ instead of $L_{x}$. The following formulas use a linear approximation of $L_{x}$:
+
+\begin{align}
+{}_{n}L_{x} &= \frac{l_{x}+l_{x+n}}{2} \label{LxID}
+\intertext{and the identity between $l_{x}$ and $d{x}$:}
+l_{x+1} &= 1-\sum _{i=0}^{x} d_{i} \notag \label{lxID}
+\intertext{where $l_{0}$ is equal to 1} 
+\end{align}
+
+The quantity we wish to redistribute is exactly equal to the $\rho$ above, but we will label it $\vartheta$ because it is distributed differently by age. $\rho_{x}$ thus identifies the degree to which reproduction at age $x$ benefits from prior improvements in mortality. $\rho$ \emph{receives} the mortality benefit. $\vartheta_{x}$ identifies the contributions from changes in death probabilities at birth of dying in the interval $x$ to $x+1$ to changes in net reproduction \emph{at all later ages}. Think of $\vartheta_{x}$ as the mortality improvements (or retrocesses) \emph{sent} to later ages. 
+
+\begin{align}
+\intertext{where:}
+\sum \vartheta_{x} &= \sum \rho_{x} \notag
+\varepsilon &= \beta + \vartheta \notag
+\intertext{but the age-specific components need not be equal, so we redefine $\varepsilon_{x}$ to $\varepsilon_{x}^{\star}$}
+\varepsilon_{x}^{\star} &= \beta_{x} + \vartheta_{x} \notag
+\intertext{where $\beta_{x}$ (or $\beta_{x}+\varsigma$) are unaltered, and:} \notag
+\vartheta_{x} &= \frac{(d_{x}^{2}-d_{x}^{1})\Big(\displaystyle \frac{f_{x}^{1}+f_{x}^{2}}{2}+\sum _{i=x+1}^{\omega}f_{i}^{1}+f_{i}^{2}\Big)}{2} \notag
+\intertext{where $\omega$ is the upper open age group.} \notag
+\end{align}
+
+\subsection{Proof of Consistency of Redefined Mortality Component}
+It may not be obvious to the naked eye that the sum of $\rho_{x}$ must be equal to the sum of $\vartheta_{x}$. Here I provide an algebraic proof.
+
+\begin{align}
+\intertext{Starting with $\rho$, we plug in \eqref{LxID}:}
+\rho &= \sum_{x=0}^{\omega} \displaystyle\frac{\Big(\displaystyle\frac{\displaystyle l_{x}^{1}+l_{x+1}^{1}}{2}-\displaystyle\frac{\displaystyle l_{x}^{2}+l_{x+1}^{2}}{2}\Big)(f_{x}^{1}+f_{x}^{2})}{2} 
+\intertext{and by \eqref{lxID}:}
+&= \sum_{x=0}^{\omega} \frac{\Bigg(\displaystyle\frac{\displaystyle 1-\sum _{i=0}^{x} d_{i}^{1}+1-\sum _{i=0}^{x+1} d_{i}^{1}}{2}-\displaystyle\frac{\displaystyle 1-\sum _{i=0}^{x} d_{i}^{2}+1-\sum _{i=0}^{x+1} d_{i}^{2}}{2}\Bigg)(f_{x}^{1}+f_{x}^{2})}{2} \notag \\ \notag \\
+ &= \sum_{x=0}^{\omega} \frac{\Bigg(\displaystyle\frac{\displaystyle-\sum _{i=0}^{x} d_{i}^{1}-\sum _{i=0}^{x+1} d_{i}^{1}+\sum _{i=0}^{x} d_{i}^{2}+\sum _{i=0}^{x+1} d_{i}^{2}}{2}\Bigg)*(f_{x}^{1}+f_{x}^{2})}{2} \notag 
+\intertext{noticing that all $x+1$ indices are double counted and then divided by two, we split:}
+ &= \sum_{x=0}^{\omega} \frac{\displaystyle\frac{\displaystyle(d_{x}^{2}-d_{x}^{1})(f_{x}^{1}+f_{x}^{2})}{2}+\Bigg(\displaystyle \sum _{i=0}^{x+1} d_{i}^{2}-\sum _{i=0}^{x+1} d_{i}^{1} \Bigg)(f_{x}^{1}+f_{x}^{2})}{2} \notag 
+\intertext{switch the limits of summation for $d_{x}$ and $f_{x}$:}
+ &= \sum_{x=0}^{\omega} \frac{\displaystyle \frac{\displaystyle(d_{x}^{2}-d_{x}^{1})(f_{x}^{1}+f_{x}^{2})}{2}+(d_{x}^{2}-d_{x}^{1})\Bigg( \sum _{i=x+1}^{\omega}f_{i}^{1}+f_{i}^{2}\Bigg)}{2} \notag \notag \\ \notag \\
+ &= \sum_{x=0}^{\omega} \frac{(d_{x}^{2}-d_{x}^{1})\Big(\displaystyle \frac{f_{x}^{1}+f_{x}^{2}}{2}+\sum _{i=x+1}^{\omega}f_{i}^{1}+f_{i}^{2}\Big)}{2} \notag \\ \notag \\
+ & = \vartheta{~~~~~~~~~~~}\blacksquare \notag
+\end{align}
+
+Now we have two methods to account for mortality/survival in decomposing $R_{0}$: 1) Either we look at the effects to reproduction within an age of survival, $l_{x}$, differences in that age, or 2) we look at the present and later effects to reproduction of the unconditional (at birth) probabilities of dying within the interval in question, $d_{x}$. We defined $\rho$ as the decomposition element that corresponds with $l_{x}$ differences, and $\vartheta$ as an element that reflects the effects of differences in $d_{x}$. Users should be aware of the differing interpretations of these treatments. It may be preferable to provide both when doing such a decomposition, due to the differing pieces of information provided. It should be emphasized that $\vartheta_{x}$ does not reflect contributions to differences in $R_{0}$ due to interval death probabilities conditioned on survival to that interval, $q_{x}$, nor does it reflect conditional interval risks, $\mu_{x}$. At this time, such formulas remain to be written. I am not certain that re-expressing $\rho_{x}$ in terms of $\mu_{x}$ would yield different results: Since $d_{x}$, $l_{x}$, $\mu_{x}$ and other mortality measures are all related via identities, for instance:
+\begin{align}
+\mu_{x} &= \frac{d_{x}}{L_{x}} \notag
+\intertext{then using \eqref{LxID} and \eqref{lxID}:}
+&= \frac{2d_{x}}{\displaystyle 2-\sum _{i=0}^{x} d_{i}-\sum _{i=0}^{x+1} d_{i}} \notag
+\end{align}
+Other such identities could be used to switch out the $l_{x}$ or $d_{x}$ components in any of the above formulas, but it not clear that progress could be made along these lines in refining the mortality contribution and providing more information.
+
+\section*{A relative Decomposition Method}
+\citet{lillova2008r0decomp} go about decomposing a difference in $R_{0}$ in terms \emph{relative} change, and also succeed in breaking it down into three parts. The sum of these three parts is equal to $\frac{\varepsilon}{R_{0}}$. In other words, the difference, $\varepsilon$ is relativized to $R_{0}$, which has a certain advantage when comparing change in the same time period between several populations, which is just what Lillova et. al. do. Their formula, while useful, is less amenable to including age-specific contributions, and it includes a difficult-to-interpret interaction term, as shown in following. Assume a constant sex ratio at birth, say 1.05\footnote{\citet{lillova2008r0decomp} make this assumption for simplicity, but it can be relaxed.}. Then the proportion female of births, $\delta$, is $\frac{1}{1.05}$. In this way, all-birth fertility can be used in the formulas:
+
+\begin{align}
+R_{0} &= \delta\cdot\sum _{0}^{\omega} f_{x}L_{x} \notag
+\intertext{and}
+\varepsilon &= R_{0}^{2}-R_{0}^{1} \notag
+\intertext{we denote relative change:}
+\frac{\dot{R_{0}^{1}}}{R_{0}^{1}} \notag &= \frac{\varepsilon}{R_{0}^{1}} \notag \\ \notag \\
+&= (F-1)+(L-1)+(F-1)\cdot(L-1) \label{Lillova}
+\intertext{where:}
+F &= \frac{\displaystyle \sum_{0}^{\omega} f_{x}^{2}L_{x}^{1}}{\displaystyle \sum_{0}^{\omega}f_{x}^{1}L_{x}^{1}} \notag
+\intertext{and}
+L &= \frac{\displaystyle \sum_{0}^{\omega} f_{x}^{2}L_{x}^{2}}{\displaystyle \sum_{0}^{\omega}f_{x}^{2}L_{x}^{1}} \notag
+\end{align}
+In this formula, $\delta$ is not included, since it is assumed equal in the numerator and the denominator and so cancels out. $F-1$ is interpreted as the fertility contribution to the relative change in $R_{0}$, $L-1$ as the survival contribution, and $(F-1)\cdot(L-1)$ as a mortality survival interaction term. It is not clear to me what information is gained from this later interaction term. $R_{0}$ is itself an interaction of survival and fertility that we wish to break down, and so leaving behind an interaction term in the formula appears to undermine the desired result. \citet{gupta1978general} also states that interaction terms in decomposition problems are undesirable side-effects. In practice, when any of the Kitagawa formula family is divided by $R_{0}^{1}$, the results are not too far off: the $\frac{\rho}{R_{0}^{1}}$ is only slightly different than $L-1$, and $(F-1)$ is off from $\frac{\beta}{R_{0}^{1}}$ by a small margin. It appears that $(F-1)\cdot(L-1)$ was an undesired residual in the formulas these authors employ, but the analysis they conduct is still consistent and valid because the terms in \eqref{Lillova} still sum to $\varepsilon$ when multiplied by $R_{0}^{1}$. In fact, when  the interaction term is redistributed in equal parts to the fertility and survival components, these sum to the exact same amount as in the basic Kitagawa case and we can relate back to the same formula (proof not provided). The practice of distributing interaction effects equally among principal effects was advocated by \citet{gupta1978general}, who attributes the practice to \citet{durand1948labour}. This is a simple step which makes results more interpretable.
+
+In keeping with their paper, it is a worthwhile extra step, either for exploratory reasons and for analysis itself, to divide components in the Kitagawa formulas by their starting values when observing change over time. In the case of age-specific vectors of $\rho$, $\vartheta$, $\beta$, $\varsigma$ or $\varepsilon$, these can be divided by the corresponding age-specific vector of $R_{0}^{1}$ to arrive at the contribution to the relative change in $R_{0}$.
+
+\subsection{Proof of Consistency}
+For completeness, a proof of the consistency between the \citet{lillova2008r0decomp} relative method and the Kitagawa $\varepsilon$ will be provided here.
+
+\begin{align}
+\intertext{by \eqref{Lillova}:}
+\frac{R_{0}^{2}-R_{0}^{1}}{R_{0}^{1}} &= (F-1)+(L-1)+(F-1)\cdot(L-1) \notag \\ \notag \\
+&= \Bigg(\frac{\displaystyle \sum_{0}^{\omega} f_{x}^{2}L_{x}^{1}}{\displaystyle \sum_{0}^{\omega}f_{x}^{1}L_{x}^{1}}-1 \Bigg)+\Bigg(\frac{\displaystyle \sum_{0}^{\omega} f_{x}^{2}L_{x}^{2}}{\displaystyle \sum_{0}^{\omega}f_{x}^{2}L_{x}^{1}}-1 \Bigg)+\Bigg(\frac{\displaystyle \sum_{0}^{\omega} f_{x}^{2}L_{x}^{1}}{\displaystyle \sum_{0}^{\omega}f_{x}^{1}L_{x}^{1}}-1 \Bigg)\cdot\Bigg(\frac{\displaystyle \sum_{0}^{\omega} f_{x}^{2}L_{x}^{2}}{\displaystyle \sum_{0}^{\omega}f_{x}^{2}L_{x}^{1}}-1 \Bigg) \notag 
+\end{align}
+
+\begin{align}
+\intertext{Multiply in $R_{0}$, cancel first terms, expand later product:}
+{~~~~}&= \sum_{0}^{\omega}f_{x}^{2}L_{x}^{1}-\sum_{0}^{\omega}f_{x}^{1}L_{x}^{1}+\frac{\displaystyle \sum_{0}^{\omega} f_{x}^{1}L_{x}^{1}\cdot \sum_{0}^{\omega} f_{x}^{2}L_{x}^{2}}{\displaystyle \sum_{0}^{\omega}f_{x}^{2}L_{x}^{1}} - \sum _{0}^{\omega}f_{x}^{1}L_{x}^{1}\notag \\ \notag \\
+&  +  \frac{\displaystyle \sum_{0}^{\omega} f_{x}^{1}L_{x}^{1}\cdot\sum_{0}^{\omega} f_{x}^{2}L_{x}^{1} \cdot \sum_{0}^{\omega} f_{x}^{2}L_{x}^{2}}{\displaystyle \sum_{0}^{\omega} f_{x}^{1}L_{x}^{1}\cdot\sum_{0}^{\omega}f_{x}^{2}L_{x}^{1}} - \frac{\displaystyle \sum_{0}^{\omega} f_{x}^{1}L_{x}^{1}\cdot \sum_{0}^{\omega} f_{x}^{2}L_{x}^{2}}{\displaystyle \sum_{0}^{\omega}f_{x}^{2}L_{x}^{1}} \notag \\ \notag \\
+& - \frac{\displaystyle \sum_{0}^{\omega} f_{x}^{1}L_{x}^{1}\cdot \sum_{0}^{\omega} f_{x}^{2}L_{x}^{1}}{\displaystyle \sum_{0}^{\omega}f_{x}^{1}L_{x}^{1}} + \sum_{0}^{\omega} f_{x}^{1}L_{x}^{1} \notag \\
+\intertext{which cancels exactly to:}
+& = \sum_{0}^{\omega}f_{x}^{2}L_{x}^{2} - \sum_{0}^{\omega}f_{x}^{1}L_{x}^{1} \notag \\ \notag \\
+& = -\varepsilon {~~~~~~~~~~~}\blacksquare\notag
+\end{align}
+
+That $\varepsilon$ is negative makes no real difference- one need only decide which is population 1 and which is 2. The authors prefer $R_{0}^{2}-R_{0}^{1}$ because it makes more intuitive sense for time comparisons, where 2 is later than 1.
+
+\section*{Conclusions}
+Having taken the basic Kitagawa decomposition of $R_{0}$ and tweaked it in a few optional ways for the case of $R_{0}$, I now make some recommendations regarding which procedures to finally use when performing an $R_{0}$ decomposition analysis. The short answer is: all that apply in a given situation. Separating out the sex ratio at birth is always good practice, and it is indispensable when decomposing $R_{0}$ differences between the sexes. When presenting the decomposition results in tables, three separate quantities should be identified in two ways: the pure fertility component, $\beta^{\star}$, the sex ratio component, $\varsigma$, and the survival component, $\rho$ or $\vartheta$; all both in absolute contributions and as a percentage of the difference $\varepsilon$. Whether to present results as a relative change will depend on the particulars of the analysis at hand: observations of the same population at different time points always lends itself to displaying differences in terms of relative change. In this case, simply perform a decomposition of the difference, and then multiply in $\frac{1}{R_{0}^{1}}$ to all elements (i.e. the earlier $R_{0}$ for each separate decomposition). This greatly simplifies the steps involved. As for whether to display mortality contributions in terms of the survival function or the $d_{x}$ function, it makes no difference when results are not displayed by age, since these two terms sum to the same amount. When displaying results graphically and by age, images are more intuitive to understand when using the $d_{x}$ ($\vartheta_{x}$) method. $\rho_{x}$ displays the mortality component in terms of the ages where prior improvements have the greatest impact, but may give the false impression that these are also the ages where improvements directly took place. Displaying both gives more information, but one must be careful to point out the differences between $\vartheta_{x}$ and $\rho_{x}$. If a graph of undifferentiated net age contributions, $\varepsilon_{x}$, is displayed, it is better to show that corresponding to the $d_{x}$ composition of mortality. 
+
+All of the methods presented here can be performed in a standard spreadsheet. An Excel spreadsheet and an R package with example data and a tutorial will be available in March 2011 to accompany the methods presented here.
+
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+
+
+\end{document}
